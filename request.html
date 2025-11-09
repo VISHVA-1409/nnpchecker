@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gaming Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 15px;
+            padding-bottom: 30px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: #666;
+            text-decoration: none;
+            font-size: 15px;
+            margin-bottom: 20px;
+            transition: color 0.3s;
+            padding: 8px 0;
+        }
+
+        .back-link:hover {
+            color: #333;
+        }
+
+        .back-link::before {
+            content: "←";
+            margin-right: 8px;
+            font-size: 20px;
+        }
+
+        .alert {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            color: #333;
+            padding: 14px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            border: 1px solid #e0e0e0;
+            z-index: 1000;
+            transition: top 0.4s ease;
+            font-weight: 500;
+            min-width: 280px;
+            max-width: 90%;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .alert.show {
+            top: 15px;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .card-header::before {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+
+        .online-players .card-header::before {
+            content: "👥";
+        }
+
+        .incoming-requests .card-header::before {
+            content: "🕐";
+        }
+
+        .match-history .card-header::before {
+            content: "🏆";
+        }
+
+        .player-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+            gap: 10px;
+        }
+
+        .player-item:last-child {
+            border-bottom: none;
+        }
+
+        .player-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .player-info h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .player-info p {
+            font-size: 13px;
+            color: #777;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .challenge-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            flex-shrink: 0;
+            min-width: 90px;
+        }
+
+        .challenge-btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .challenge-btn:active {
+            transform: translateY(0);
+        }
+
+        .empty-state {
+            color: #999;
+            font-size: 14px;
+            padding: 15px 0;
+            text-align: center;
+        }
+
+        .request-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .request-info h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .request-info p {
+            font-size: 13px;
+            color: #777;
+            margin-bottom: 12px;
+        }
+
+        .request-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .accept-btn, .reject-btn {
+            border: none;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .accept-btn {
+            background: #22c55e;
+            color: white;
+        }
+
+        .accept-btn:hover {
+            background: #16a34a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+
+        .reject-btn {
+            background: #ef4444;
+            color: white;
+        }
+
+        .reject-btn:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .accept-btn:active, .reject-btn:active {
+            transform: translateY(0);
+        }
+
+        .match-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .game-id {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #333;
+            font-weight: 500;
+            word-break: break-all;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        .status-badge.active {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        /* Desktop view - side by side layout */
+        @media (min-width: 768px) {
+            body {
+                padding: 20px;
+            }
+
+            .dashboard {
+                grid-template-columns: 2fr 1fr;
+                gap: 20px;
+                margin-bottom: 20px;
+            }
+
+            .card {
+                padding: 25px;
+            }
+
+            .card-header {
+                font-size: 22px;
+                margin-bottom: 25px;
+            }
+
+            .player-info h3 {
+                font-size: 17px;
+            }
+
+            .player-info p {
+                font-size: 14px;
+            }
+
+            .challenge-btn {
+                padding: 11px 24px;
+                font-size: 14px;
+                min-width: 100px;
+            }
+
+            .request-info h3 {
+                font-size: 17px;
+            }
+
+            .request-info p {
+                font-size: 14px;
+            }
+
+            .game-id {
+                font-size: 13px;
+            }
+
+            .alert {
+                min-width: 300px;
+                padding: 16px 32px;
+                font-size: 15px;
+            }
+
+            .alert.show {
+                top: 20px;
+            }
+        }
+
+        /* Large desktop view */
+        @media (min-width: 1200px) {
+            .card-header {
+                font-size: 24px;
+            }
+
+            .player-info h3 {
+                font-size: 18px;
+            }
+
+            .challenge-btn {
+                padding: 12px 28px;
+                font-size: 15px;
+            }
+
+            .game-id {
+                font-size: 14px;
+            }
+        }
+
+        /* Small mobile optimization */
+        @media (max-width: 380px) {
+            body {
+                padding: 10px;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            .card-header {
+                font-size: 18px;
+                margin-bottom: 15px;
+            }
+
+            .player-info h3 {
+                font-size: 15px;
+            }
+
+            .player-info p {
+                font-size: 12px;
+            }
+
+            .challenge-btn {
+                padding: 9px 16px;
+                font-size: 13px;
+                min-width: 80px;
+            }
+
+            .request-actions {
+                gap: 8px;
+            }
+
+            .accept-btn, .reject-btn {
+                padding: 10px 12px;
+                font-size: 13px;
+            }
+
+            .game-id {
+                font-size: 11px;
+                min-width: 150px;
+            }
+
+            .alert {
+                min-width: 250px;
+                padding: 12px 20px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="#" class="back-link">Back to Dashboard</a>
+
+        <div id="alert" class="alert"></div>
+
+        <div class="dashboard">
+            <div class="card online-players">
+                <div class="card-header">Online Players</div>
+                
+                
+
+                <div class="player-item">
+                    <div class="player-info">
+                        <h3>Yogesh_0511</h3>
+                        <p>itsyogeshwaran11@gmail.com</p>
+                    </div>
+                    <button class="challenge-btn" onclick="sendChallenge('Yogesh')">Challenge</button>
+                </div>
+                 <div class="player-item">
+                    <div class="player-info">
+                        <h3>dhanush_2706</h3>
+                        <p>dhanush_2706@gmail.com</p>
+                    </div>
+                    <button class="challenge-btn" onclick="sendChallenge('dhanush_007')">Challenge</button>
+                </div>
+
+                <div class="player-item">
+                    <div class="player-info">
+                        <h3>deepak_0707</h3>
+                        <p>deepak_0709@gmail.com</p>
+                    </div>
+                    <button class="challenge-btn" onclick="sendChallenge('Dhanush_2706')">Challenge</button>
+                </div>
+                <div class="player-item">
+                    <div class="player-info">
+                        <h3>harish_2706</h3>
+                        <p>harish2006@gmail.com</p>
+                    </div>
+                    <button class="challenge-btn" onclick="sendChallenge('Vishva')">Challenge</button>
+                </div>
+
+
+                <div class="player-item">
+                    <div class="player-info">
+                        <h3>suresh_1810</h3>
+                        <p>suresh_1810@gmail.com</p>
+                    </div>
+                    <button class="challenge-btn" onclick="sendChallenge('Dhanush_2706')">Challenge</button>
+                </div>
+            </div>
+
+            <div class="card incoming-requests">
+                <div class="card-header">Incoming Requests</div>
+                <div class="request-item">
+                    <div class="request-info">
+                        <h3>dhanush_2706</h3>
+                        <p>wants to play with you</p>
+                    </div>
+                    <div class="request-actions">
+                        <button class="accept-btn" onclick="acceptRequest('Dhanush_2706')">Accept</button>
+                        <button class="reject-btn" onclick="rejectRequest('Dhanush_2706')">Reject</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card match-history">
+            <div class="card-header">Match History</div>
+            <div class="match-item">
+                <span class="game-id">GAME-1762617918252-S6LJQ4Q</span>
+                <span class="status-badge active">active</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function sendChallenge(playerName) {
+            const alertBox = document.getElementById('alert');
+            alertBox.textContent = `Challenge sent to ${playerName}!`;
+            alertBox.classList.add('show');
+
+            setTimeout(() => {
+                alertBox.classList.remove('show');
+            }, 3000);
+        }
+
+        function acceptRequest(playerName) {
+            const alertBox = document.getElementById('alert');
+            alertBox.textContent = `You accepted ${playerName}'s challenge!`;
+            alertBox.classList.add('show');
+
+            setTimeout(() => {
+                window.location.href = 'toss.html';
+            }, 1500);
+        }
+
+        function rejectRequest(playerName) {
+            const alertBox = document.getElementById('alert');
+            alertBox.textContent = `You rejected ${playerName}'s challenge.`;
+            alertBox.classList.add('show');
+
+            setTimeout(() => {
+                alertBox.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
