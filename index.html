@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NNP CheckersHub - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .crown-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #2d3748;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            color: #718096;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #718096;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .tab.active {
+            color: #667eea;
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: border 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        #signupForm {
+            display: none;
+        }
+
+        /* Game Selection Page Styles */
+        .game-container {
+            display: none;
+            background: #ffffff;
+            min-height: 100vh;
+            padding: 40px 20px;
+            width: 100%;
+        }
+
+        .game-container.active {
+            display: block;
+        }
+
+        .game-header {
+            max-width: 1200px;
+            margin: 0 auto 40px;
+        }
+
+        .game-header h1 {
+            color: #2d3748;
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        .welcome-text {
+            color: #718096;
+            font-size: 18px;
+        }
+
+        .game-modes {
+            max-width: 1200px;
+            margin: 0 auto 40px;
+        }
+
+        .game-modes h2 {
+            color: #2d3748;
+            font-size: 28px;
+            margin-bottom: 30px;
+        }
+
+        .mode-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .mode-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .mode-card:nth-child(1) {
+            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+        }
+
+        .mode-card:nth-child(2) {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        }
+
+        .mode-card:nth-child(3) {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+        }
+
+        .mode-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .mode-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .mode-card h3 {
+            color: #2d3748;
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .mode-card p {
+            color: #718096;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+
+        .play-btn {
+            width: 100%;
+            padding: 15px;
+            background: #2d3748;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .play-btn:hover {
+            background: #1a202c;
+            transform: translateY(-2px);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .info-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .info-icon {
+            font-size: 32px;
+        }
+
+        .info-card h3 {
+            color: #2d3748;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div class="login-container" id="loginPage">
+        <div class="crown-icon">👑</div>
+        <h1>NNP CheckersHub</h1>
+        <p class="tagline">Play checkers like never before</p>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('login')">Login</button>
+            <button class="tab" onclick="switchTab('signup')">Sign Up</button>
+        </div>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <input type="email" placeholder="Email" required id="loginEmail">
+            </div>
+            <div class="form-group">
+                <input type="password" placeholder="Password" required id="loginPassword">
+            </div>
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+
+        <form id="signupForm" onsubmit="handleSignup(event)">
+            <div class="form-group">
+                <input type="text" placeholder="Username" required id="signupUsername">
+            </div>
+            <div class="form-group">
+                <input type="email" placeholder="Email" required id="signupEmail">
+            </div>
+            <div class="form-group">
+                <input type="password" placeholder="Password" required id="signupPassword">
+            </div>
+            <button type="submit" class="login-btn">Sign Up</button>
+        </form>
+    </div>
+
+    <!-- Game Selection Page -->
+    <div class="game-container" id="gamePage">
+        <div class="game-header">
+            <h1>NNP Checker Game</h1>
+            <p class="welcome-text">Welcome, <span id="playerName">Player</span></p>
+        </div>
+
+        <div class="game-modes">
+            <h2>Select Game Mode</h2>
+            <div class="mode-grid">
+                <div class="mode-card">
+                    <div class="mode-icon">🤖</div>
+                    <h3>Board to AI</h3>
+                    <p>Play against our AI</p>
+                    <button class="play-btn" onclick="redirectTo('BA.html')">Play Now</button>
+                </div>
+
+                <div class="mode-card">
+                    <div class="mode-icon">♟️</div>
+                    <h3>Board to Board</h3>
+                    <p>Physical boards</p>
+                    <button class="play-btn" onclick="redirectTo('BB.html')">Play Now</button>
+                </div>
+
+                <div class="mode-card">
+                    <div class="mode-icon">🌐</div>
+                    <h3>Board to Online</h3>
+                    <p>Physical + Online</p>
+                    <button class="play-btn" onclick="redirectTo('BO.html')">Play Now</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="info-icon">🏆</div>
+                <div>
+                    <h3>Leaderboard</h3>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-icon">📊</div>
+                <div>
+                    <h3>Match History</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+
+        function switchTab(tab) {
+            const tabs = document.querySelectorAll('.tab');
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+
+            tabs.forEach(t => t.classList.remove('active'));
+
+            if (tab === 'login') {
+                tabs[0].classList.add('active');
+                loginForm.style.display = 'block';
+                signupForm.style.display = 'none';
+            } else {
+                tabs[1].classList.add('active');
+                loginForm.style.display = 'none';
+                signupForm.style.display = 'block';
+            }
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            // Simple validation - in a real app, you'd verify against a backend
+            if (email && password) {
+                currentUser = email.split('@')[0];
+                showGamePage();
+            }
+        }
+
+        function handleSignup(event) {
+            event.preventDefault();
+            const username = document.getElementById('signupUsername').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+
+            // Simple validation - in a real app, you'd save to a backend
+            if (username && email && password) {
+                currentUser = username;
+                showGamePage();
+            }
+        }
+
+        function showGamePage() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('gamePage').classList.add('active');
+            document.getElementById('playerName').textContent = currentUser || 'Player';
+        }
+
+        function redirectTo(page) {
+            // Redirect to the actual page without alert
+            window.location.href = page;
+        }
+    </script>
+</body>
+</html>
